@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Aceita sair comigo?</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #ffe6f0;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+    h1 {
+        color: #ff4d88;
+    }
+    .botoes {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+    button {
+        padding: 12px 25px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        position: relative;
+        z-index: 2;
+    }
+    #sim {
+        background-color: #4CAF50;
+        color: white;
+    }
+    #nao {
+        background-color: #f44336;
+        color: white;
+    }
+    #lixeira {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        font-size: 40px;
+    }
+</style>
+</head>
+<body>
+<h1>Aceita sair comigo?</h1>
+<div class="botoes">
+    <button id="sim">Sim</button>
+    <button id="nao">Não</button>
+</div>
+<div id="lixeira">🗑️</div>
+
+<script>
+const nao = document.getElementById("nao");
+const sim = document.getElementById("sim");
+let spamInterval;
+
+nao.addEventListener("click", () => {
+    // Cria um clone absoluto para animar
+    const cloneNao = nao.cloneNode(true);
+    document.body.appendChild(cloneNao);
+
+    // Posiciona na mesma posição do botão original
+    const rect = nao.getBoundingClientRect();
+    cloneNao.style.position = "fixed";
+    cloneNao.style.top = rect.top + "px";
+    cloneNao.style.left = rect.left + "px";
+    cloneNao.style.margin = 0;
+    cloneNao.style.zIndex = 10;
+
+    // Esconde o botão original
+    nao.style.visibility = "hidden";
+
+    // Resmungos
+    const passos = ["Não…", "Não… não…", "Nããão…"];
+    let i = 0;
+    cloneNao.textContent = passos[i];
+
+    const targetX = window.innerWidth - 60;
+    const targetY = window.innerHeight - 60;
+    const passoPx = 2;
+    const interval = setInterval(() => {
+        const rectClone = cloneNao.getBoundingClientRect();
+        const dx = targetX - rectClone.left;
+        const dy = targetY - rectClone.top;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+
+        if(dist < passoPx){
+            clearInterval(interval);
+            cloneNao.remove();
+            alert("Você vai sim 😏");
+            startSpawningSim();
+            return;
+        }
+
+        cloneNao.style.left = rectClone.left + (dx/dist)*passoPx + "px";
+        cloneNao.style.top  = rectClone.top + (dy/dist)*passoPx + "px";
+
+        if(i < passos.length -1 && Math.random() < 0.05){
+            i++;
+            cloneNao.textContent = passos[i];
+        }
+    }, 20);
+});
+
+function startSpawningSim() {
+    spamInterval = setInterval(() => {
+        const novoSim = sim.cloneNode(true);
+        novoSim.style.position = "absolute";
+        novoSim.style.top = Math.random() * (window.innerHeight - 50) + "px";
+        novoSim.style.left = Math.random() * (window.innerWidth - 80) + "px";
+
+        novoSim.addEventListener("click", () => {
+            clearInterval(spamInterval);
+            document.body.innerHTML = "<h1 style='color:#ff4d88; padding:20px;'>Muito obrigado por aceitar meu convite, te busco às 20:00, esteja pronta 😘</h1>";
+        });
+
+        document.body.appendChild(novoSim);
+    }, 300);
+}
+
+sim.addEventListener("click", () => {
+    clearInterval(spamInterval);
+    document.body.innerHTML = "<h1 style='color:#ff4d88; padding:20px;'>Muito obrigado por aceitar meu convite, te busco às 20:00, esteja pronta 😘</h1>";
+});
+</script>
+</body>
+</html>
